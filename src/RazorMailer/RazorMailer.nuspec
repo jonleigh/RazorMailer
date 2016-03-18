@@ -6,8 +6,8 @@
     <title>$title$</title>
     <authors>$author$</authors>
     <owners>$author$</owners>
-    <licenseUrl>https://github.com/jonleigh/Yo/blob/master/LICENSE.md</licenseUrl>
-    <projectUrl>https://github.com/jonleigh/Yo</projectUrl>
+    <licenseUrl>https://github.com/jonleigh/RazorMailer/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/jonleigh/RazorMailer</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
     <releaseNotes></releaseNotes>
