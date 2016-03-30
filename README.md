@@ -11,7 +11,7 @@ It supports the following:
 * Sending of emails via 3rd party mechanisms by extending ``IEmailDispatcher``
 
 
-A [sample application](/tree/master/samples) has been provided demonstrating a working implementation of RazorMailer.  I've also included some information on two tools that come in handy when developing and testing emails within a project.  This can be found near the [bottom of the page](#development-and-testing).
+A [sample application](https://github.com/jonleigh/RazorMailer/tree/master/samples) has been provided demonstrating a working implementation of RazorMailer.  I've also included some information on two tools that come in handy when developing and testing emails within a project.  This can be found near the [bottom of the page](#development-and-testing).
 
 If you have any queries, comments or suggestions, please get in contact through <contact details>.
 
@@ -136,7 +136,7 @@ Assert.Contains("Joe Blogs", email.Body);
 ```
 
 ###Development and Testing###
-The included [sample application]() makes use of a simple SMTP client for windows called [smtp4dev](http://smtp4dev.codeplex.com/). smtp4dev sits in your tray and collects any emails sent to it on port 25, no matter who they're addressed to.
+The included [sample application](https://github.com/jonleigh/RazorMailer/tree/master/samples) makes use of a simple SMTP client for windows called [smtp4dev](http://smtp4dev.codeplex.com/). smtp4dev sits in your tray and collects any emails sent to it on port 25, no matter who they're addressed to.
 
 Another option is to use the test email server in a box solution, [Mailtrap](https://mailtrap.io/). Mailtrap provides you with a test mailbox in the cloud that traps all emails sent to it, preventing them being delivered to the end email address. This is especially handy if you want to interact with emails sent from a test environment whilst simultaneously wanting avoiding those embarrassing moments when a user(s) receives an email they shouldn't have.
 
