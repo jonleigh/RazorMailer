@@ -7,14 +7,14 @@ using RazorEngine.Templating;
 
 namespace RazorMailer
 {
-    public class RazorMailer : IDisposable
+    public class RazorMailerEngine : IDisposable
     {
         private readonly string _fromName;
         private readonly string _fromEmail;
         private readonly IEmailDispatcher _dispatcher;
         private readonly IRazorEngineService _service;
 
-        public RazorMailer(string templatePath, IEmailDispatcher dispatcher, string fromEmail, string fromName)
+        public RazorMailerEngine(string templatePath, IEmailDispatcher dispatcher, string fromEmail, string fromName)
         {
             _fromName = fromName;
             _fromEmail = fromEmail;

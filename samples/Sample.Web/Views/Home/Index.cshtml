@@ -1,0 +1,42 @@
+﻿@using Sample.Core.Email.Models
+@model WelcomeModel
+
+@{
+    ViewBag.Title = "Home Page";
+}
+
+<div class="jumbotron">
+    <h1>RazorMailer MVC5 Example Application</h1>
+    <p class="lead">A simple MVC5 application demonstrating how to send emails using RazorMailer</p>
+    <p><a href="https://github.com/jonleigh/RazorMailer" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        @using (Html.BeginForm("SendWelcomeEmail", "Home", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+        {
+            <h4>Who would you like to send a welcome email to?</h4>
+                <hr />
+            <div class="form-group">
+                @Html.LabelFor(m => m.Name, new {@class = "col-md-2 control-label"})
+                <div class="col-md-10">
+                    @Html.TextBoxFor(m => m.Name, new {@class = "form-control"})
+                    @Html.ValidationMessageFor(m => m.Name, "", new {@class = "text-danger"})
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(m => m.Email, new { @class = "col-md-2 control-label" })
+                <div class="col-md-10">
+                    @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="submit" value="Send Email" class="btn btn-default"/>
+                </div>
+            </div>
+        }
+    </div>
+</div>

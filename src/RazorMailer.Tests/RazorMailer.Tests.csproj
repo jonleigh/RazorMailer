@@ -62,7 +62,7 @@
   <ItemGroup>
     <Compile Include="Models\WelcomeModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RazorMailerTests.cs" />
+    <Compile Include="RazorMailerEngineTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
