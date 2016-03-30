@@ -13,8 +13,6 @@ It supports the following:
 
 A [sample application](https://github.com/jonleigh/RazorMailer/tree/master/samples) has been provided demonstrating a working implementation of RazorMailer.  I've also included some information on two tools that come in handy when developing and testing emails within a project.  This can be found near the [bottom of the page](#development-and-testing).
 
-If you have any queries, comments or suggestions, please get in contact through <contact details>.
-
 ###Models###
 At present, RazorMailer only supports typed POCO models to populate templates.  This means you will need to create a model per email or share the same model across emails of a similar nature (e.g both only need a link to your website).  While it's easy to get up and running with ``dynamic`` models, their use in this regard is a code smell and the lack of type checking can soon become a maintenance headache.
 
