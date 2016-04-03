@@ -21,7 +21,7 @@ namespace RazorMailer.Tests
         [Fact]
         public void simple_template_with_typed_model_test()
         {
-            var email = _mailerEngine.Create("joe@blogs.com", "Welcome to our service", "WelcomeSimple", new WelcomeModel { Name = "Joe Blogs" });
+            var email = _mailerEngine.Create("joe@blogs.com", "WelcomeSimple", "Welcome to our service", new WelcomeModel { Name = "Joe Blogs" });
             _mailerEngine.Send(email);
 
             dispatcher.Verify(x => x.Send(It.IsAny<MailMessage>()), Times.Once);
@@ -31,7 +31,7 @@ namespace RazorMailer.Tests
         [Fact]
         public async Task async_simple_template_with_typed_model_test()
         {
-            var email = _mailerEngine.Create("joe@blogs.com", "Welcome to our service", "WelcomeSimple", new WelcomeModel { Name = "Joe Blogs" });
+            var email = _mailerEngine.Create("joe@blogs.com", "WelcomeSimple", "Welcome to our service", new WelcomeModel { Name = "Joe Blogs" });
             await _mailerEngine.SendAsync(email);
 
             dispatcher.Verify(x => x.SendAsync(It.IsAny<MailMessage>()), Times.Once);
@@ -41,7 +41,7 @@ namespace RazorMailer.Tests
         [Fact]
         public void layout_template_with_typed_model_test()
         {
-            var email = _mailerEngine.Create("joe@blogs.com", "Welcome to our service", "WelcomePartial", new WelcomeModel { Name = "Joe Blogs" });
+            var email = _mailerEngine.Create("joe@blogs.com", "WelcomePartial", "Welcome to our service", new WelcomeModel { Name = "Joe Blogs" });
             _mailerEngine.Send(email);
 
             dispatcher.Verify(x => x.Send(It.IsAny<MailMessage>()), Times.Once);
@@ -51,7 +51,7 @@ namespace RazorMailer.Tests
         [Fact]
         public async Task async_layout_template_with_typed_model_test()
         {
-            var email = _mailerEngine.Create("joe@blogs.com", "Welcome to our service", "WelcomePartial", new WelcomeModel { Name = "Joe Blogs" });
+            var email = _mailerEngine.Create("joe@blogs.com", "WelcomePartial", "Welcome to our service", new WelcomeModel { Name = "Joe Blogs" });
             await _mailerEngine.SendAsync(email);
 
             dispatcher.Verify(x => x.SendAsync(It.IsAny<MailMessage>()), Times.Once);

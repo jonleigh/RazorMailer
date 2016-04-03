@@ -33,7 +33,7 @@ namespace RazorMailer
             _service = RazorEngineService.Create(config);
         }
 
-        public MailMessage Create<T>(string to, string subject, string emailTemplate, T model)
+        public MailMessage Create<T>(string to, string emailTemplate, string subject, T model)
         {
             var key = _service.GetKey(emailTemplate);
             var body = _service.RunCompile(key, typeof(T), model);
