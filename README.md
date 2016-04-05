@@ -19,11 +19,10 @@ At present, RazorMailer only supports typed POCO models to populate templates.  
 ###Core Logic###
 RazorMailer can be best used in one of two ways:
 
-1. Though centralising your email logic into a single email class, responsible for sending every email within your solution.
-2. Generating and sending the email within the method that uses it (e.g the reset password method on the ``AuthenticationController``.
+1. Centralising your email logic into a single email class, responsible for sending every email within your solution.
+2. Writing a separate class per email
 
-
-I generally prefer option 1 as it's closer to the single responsibility principle than 2, although you could go further and have a single class per each email.  Whatever you choose, just ensure you have adequate unit test coverage of your email logic.  A sample centralised email class can be found below:
+Option 1 is normally adequate but if you're paying strict attention to the single responsibility principle, you may want to choose option 2.  Whatever you choose, just ensure you have adequate unit test coverage of your email logic.  A sample centralised email class can be found below:
 
 ```csharp
 public class SampleMailer
@@ -42,7 +41,7 @@ public class SampleMailer
 
 	public async Task SendWelcomeEmailAsync(WelcomeModel model)
 	{
-		var email = _mailerEngine.Create(model.Email, "Welcome to my Example Application", "WelcomePartial", model);
+		var email = _mailerEngine.Create(model.Email, "WelcomePartial", "Welcome to my Example Application", model);
 		await _mailerEngine.SendAsync(email);
 	}
 }
@@ -126,7 +125,7 @@ It's fairly trivial to write unit tests for specific emails by mocking out the `
 var dispatcher = new Mock<IEmailDispatcher>();
 var mailer = new RazorMailer("templates", dispatcher.Object, "hello@sampleapp.com", "SampleApp");
 
-var email = mailer.Create("joe@blogs.com", "Welcome to our service", "WelcomePartial", new WelcomeModel { Name = "Joe Blogs" });
+var email = mailer.Create("joe@blogs.com", "WelcomePartial", "Welcome to our service", new WelcomeModel { Name = "Joe Blogs" });
 mailer.Send(email);
 
 dispatcher.Verify(x => x.Send(It.IsAny<MailMessage>()), Times.Once);
