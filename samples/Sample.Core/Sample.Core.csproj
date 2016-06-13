@@ -35,8 +35,8 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="RazorMailer, Version=0.5.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RazorMailer.0.5.1.0\lib\net452\RazorMailer.dll</HintPath>
-      <Private>True</Private>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\src\RazorMailer\bin\Debug\RazorMailer.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
