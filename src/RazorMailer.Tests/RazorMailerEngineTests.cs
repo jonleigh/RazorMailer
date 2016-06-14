@@ -1,4 +1,5 @@
-﻿using System.Net.Mail;
+﻿using System;
+using System.Net.Mail;
 using System.Threading.Tasks;
 using Moq;
 using RazorMailer.Tests.Models;
@@ -19,7 +20,7 @@ namespace RazorMailer.Tests
         }
 
         [Fact]
-        public void simple_template_with_typed_model_test()
+        public void mailmessage_simple_template_with_typed_model_test()
         {
             var email = _mailerEngine.Create("WelcomeSimple", new WelcomeModel { Name = "Joe Blogs" }, "joe@blogs.com", "Welcome to our service");
             _mailerEngine.Send(email);
@@ -29,7 +30,7 @@ namespace RazorMailer.Tests
         }
 
         [Fact]
-        public void simple_template_without_model()
+        public void mailmessage_simple_template_without_model()
         {
             var email = _mailerEngine.Create("WelcomeSimpleNoModel", "joe@blogs.com", "Welcome to our service");
             _mailerEngine.Send(email);
@@ -38,7 +39,7 @@ namespace RazorMailer.Tests
         }
 
         [Fact]
-        public async Task async_simple_template_with_typed_model_test()
+        public async Task mailmessage_async_simple_template_with_typed_model()
         {
             var email = _mailerEngine.Create("WelcomeSimple", new WelcomeModel { Name = "Joe Blogs" }, "joe@blogs.com", "Welcome to our service");
             await _mailerEngine.SendAsync(email);
@@ -48,7 +49,7 @@ namespace RazorMailer.Tests
         }
 
         [Fact]
-        public void layout_template_with_typed_model_test()
+        public void mailmessage_layout_template_with_typed_model()
         {
             var email = _mailerEngine.Create("WelcomePartial", new WelcomeModel { Name = "Joe Blogs" }, "joe@blogs.com", "Welcome to our service");
             _mailerEngine.Send(email);
@@ -58,13 +59,57 @@ namespace RazorMailer.Tests
         }
 
         [Fact]
-        public async Task async_layout_template_with_typed_model_test()
+        public async Task mailmessage_async_layout_template_with_typed_model()
         {
             var email = _mailerEngine.Create("WelcomePartial", new WelcomeModel { Name = "Joe Blogs" }, "joe@blogs.com", "Welcome to our service");
             await _mailerEngine.SendAsync(email);
 
             dispatcher.Verify(x => x.SendAsync(It.IsAny<MailMessage>()), Times.Once);
             Assert.Contains("Joe Blogs", email.Body);
+        }
+
+        [Fact]
+        public void string_simple_template_without_model()
+        {
+            var text = _mailerEngine.Create("WelcomeSimpleNoModel");
+            Assert.Contains("Toodles", text);
+        }
+
+        [Fact]
+        public void string_simple_template_with_typed_model()
+        {
+            var text = _mailerEngine.Create("WelcomeSimple", new WelcomeModel { Name = "Joe Blogs" });
+            Assert.Contains("Joe Blogs", text);
+        }
+
+        [Fact]
+        public void string_layout_template_with_typed_model_test()
+        {
+            var text = _mailerEngine.Create("WelcomePartial", new WelcomeModel { Name = "Joe Blogs" });
+            Assert.Contains("Joe Blogs", text);
+        }
+
+        [Fact]
+        public async Task implicit_ctor_smtp_host_not_provided()
+        {
+            _mailerEngine = new RazorMailerEngine("templates", "hello@sampleapp.com", "SampleApp");
+            var email = _mailerEngine.Create("WelcomePartial", new WelcomeModel { Name = "Joe Blogs" }, "joe@blogs.com", "Welcome to our service");
+            await Assert.ThrowsAsync<InvalidOperationException>(() => _mailerEngine.SendAsync(email));
+        }
+
+        [Fact]
+        public void reduced_ctor_able_to_create_string()
+        {
+            _mailerEngine = new RazorMailerEngine("templates");
+            var text = _mailerEngine.Create("WelcomePartial", new WelcomeModel { Name = "Joe Blogs" });
+            Assert.Contains("Joe Blogs", text);
+        }
+
+        [Fact]
+        public void reduced_ctor_not_able_to_create_mailmessage()
+        {
+            _mailerEngine = new RazorMailerEngine("templates");
+            Assert.Throws<MissingInformationException>(() => _mailerEngine.Create("WelcomePartial", new WelcomeModel { Name = "Joe Blogs" }, "joe@blogs.com", "Welcome to our service"));
         }
     }
 }
