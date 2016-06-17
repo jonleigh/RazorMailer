@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Mail;
+using System.Reflection;
 using System.Threading.Tasks;
 using Moq;
 using RazorMailer.Tests.Models;
@@ -9,14 +10,14 @@ namespace RazorMailer.Tests
 {
     public class RazorMailerEngineTests
     {
-        Mock<IEmailDispatcher> dispatcher;
+        readonly Mock<IEmailDispatcher> _dispatcher;
         RazorMailerEngine _mailerEngine;
 
         public RazorMailerEngineTests()
         {
             // Initialised per test by xunit            
-            dispatcher = new Mock<IEmailDispatcher>();
-            _mailerEngine = new RazorMailerEngine("templates", "hello@sampleapp.com", "SampleApp", dispatcher.Object);
+            _dispatcher = new Mock<IEmailDispatcher>();
+            _mailerEngine = new RazorMailerEngine("templates", "hello@sampleapp.com", "SampleApp", _dispatcher.Object);
         }
 
         [Fact]
@@ -25,7 +26,7 @@ namespace RazorMailer.Tests
             var email = _mailerEngine.Create("WelcomeSimple", new WelcomeModel { Name = "Joe Blogs" }, "joe@blogs.com", "Welcome to our service");
             _mailerEngine.Send(email);
 
-            dispatcher.Verify(x => x.Send(It.IsAny<MailMessage>()), Times.Once);
+            _dispatcher.Verify(x => x.Send(It.IsAny<MailMessage>()), Times.Once);
             Assert.Contains("Joe Blogs", email.Body);
         }
 
@@ -33,39 +34,40 @@ namespace RazorMailer.Tests
         public void mailmessage_simple_template_without_model()
         {
             var email = _mailerEngine.Create("WelcomeSimpleNoModel", "joe@blogs.com", "Welcome to our service");
-            _mailerEngine.Send(email);
-
-            dispatcher.Verify(x => x.Send(It.IsAny<MailMessage>()), Times.Once);
-        }
-
-        [Fact]
-        public async Task mailmessage_async_simple_template_with_typed_model()
-        {
-            var email = _mailerEngine.Create("WelcomeSimple", new WelcomeModel { Name = "Joe Blogs" }, "joe@blogs.com", "Welcome to our service");
-            await _mailerEngine.SendAsync(email);
-
-            dispatcher.Verify(x => x.SendAsync(It.IsAny<MailMessage>()), Times.Once);
-            Assert.Contains("Joe Blogs", email.Body);
+            Assert.Contains("Welcome to my website", email.Body);
         }
 
         [Fact]
         public void mailmessage_layout_template_with_typed_model()
         {
             var email = _mailerEngine.Create("WelcomePartial", new WelcomeModel { Name = "Joe Blogs" }, "joe@blogs.com", "Welcome to our service");
-            _mailerEngine.Send(email);
-
-            dispatcher.Verify(x => x.Send(It.IsAny<MailMessage>()), Times.Once);
             Assert.Contains("Joe Blogs", email.Body);
+        }
+        
+        [Fact]
+        public void mailmessage_layout_template_with_typed_model_and_attachment()
+        {
+            var assembly = Assembly.GetAssembly(typeof (RazorMailerEngineTests));
+            using (var stream = assembly.GetManifestResourceStream($"RazorMailer.Tests.Resources.GrumpyCat.jpg"))
+            {
+                var attachment = new Attachment(stream, System.Net.Mime.MediaTypeNames.Image.Jpeg);
+                var email = _mailerEngine.Create("WelcomePartial", new WelcomeModel {Name = "Joe Blogs"}, "joe@blogs.com", "Welcome to our service", new[] {attachment});
+                Assert.Equal(1, email.Attachments.Count);
+                Assert.Equal(attachment, email.Attachments[0]);
+            }
         }
 
         [Fact]
-        public async Task mailmessage_async_layout_template_with_typed_model()
+        public void mailmessage_layout_template_without_model_and_attachment()
         {
-            var email = _mailerEngine.Create("WelcomePartial", new WelcomeModel { Name = "Joe Blogs" }, "joe@blogs.com", "Welcome to our service");
-            await _mailerEngine.SendAsync(email);
-
-            dispatcher.Verify(x => x.SendAsync(It.IsAny<MailMessage>()), Times.Once);
-            Assert.Contains("Joe Blogs", email.Body);
+            var assembly = Assembly.GetAssembly(typeof(RazorMailerEngineTests));
+            using (var stream = assembly.GetManifestResourceStream($"RazorMailer.Tests.Resources.GrumpyCat.jpg"))
+            {
+                var attachment = new Attachment(stream, System.Net.Mime.MediaTypeNames.Image.Jpeg);
+                var email = _mailerEngine.Create("WelcomePartialNoModel", "joe@blogs.com", "Welcome to our service", new[] { attachment });
+                Assert.Equal(1, email.Attachments.Count);
+                Assert.Equal(attachment, email.Attachments[0]);
+            }
         }
 
         [Fact]
@@ -87,6 +89,24 @@ namespace RazorMailer.Tests
         {
             var text = _mailerEngine.Create("WelcomePartial", new WelcomeModel { Name = "Joe Blogs" });
             Assert.Contains("Joe Blogs", text);
+        }
+
+        [Fact]
+        public void mailmessage_send()
+        {
+            var email = _mailerEngine.Create("WelcomePartial", new WelcomeModel { Name = "Joe Blogs" }, "joe@blogs.com", "Welcome to our service");
+            _mailerEngine.Send(email);
+
+            _dispatcher.Verify(x => x.Send(It.IsAny<MailMessage>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task async_mailmessage_send()
+        {
+            var email = _mailerEngine.Create("WelcomePartial", new WelcomeModel { Name = "Joe Blogs" }, "joe@blogs.com", "Welcome to our service");
+            await _mailerEngine.SendAsync(email);
+
+            _dispatcher.Verify(x => x.SendAsync(It.IsAny<MailMessage>()), Times.Once);
         }
 
         [Fact]

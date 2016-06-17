@@ -90,13 +90,14 @@ namespace RazorMailer
         /// <param name="template">The name of the Razor template (without the extension)</param>
         /// <param name="to">The email address of the person the email is to be sent to</param>
         /// <param name="subject">The email subject</param>
+        /// <param name="attachments">Any attachments to be included in the email</param>
         /// <returns>A MailMessage</returns>
-        public virtual MailMessage Create(string template, string to, string subject)
+        public virtual MailMessage Create(string template, string to, string subject, Attachment[] attachments = null)
         {
             var key = _service.GetKey(template);
             var body = _service.RunCompile(key);
 
-            return CreateMailMessage(to, subject, body);
+            return CreateMailMessage(to, subject, body, attachments);
         }
 
         /// <summary>
@@ -106,13 +107,14 @@ namespace RazorMailer
         /// <param name="model">A typed model containting data for the variables in your Razor template</param>
         /// <param name="to">The address the email is to be sent to</param>
         /// <param name="subject">The email subject</param>
+        /// <param name="attachments">Any attachments to be included in the email</param>
         /// <returns>A MailMessage</returns>
-        public virtual MailMessage Create<T>(string template, T model, string to, string subject)
+        public virtual MailMessage Create<T>(string template, T model, string to, string subject, Attachment[] attachments = null)
         {
             var key = _service.GetKey(template);
             var body = _service.RunCompile(key, typeof(T), model);
 
-            return CreateMailMessage(to, subject, body);
+            return CreateMailMessage(to, subject, body, attachments);
         }
 
         /// <summary>
@@ -141,14 +143,16 @@ namespace RazorMailer
             message.Dispose();
         }
 
+
         /// <summary>
         /// Creates a MailMessage with the fromEmail and fromName specified in the constructor
         /// </summary>
         /// <param name="to">The email address to whom the email will be addressed</param>
         /// <param name="subject">The subject of the email</param>
         /// <param name="body">The HTML body of the email</param>
+        /// <param name="attachments">Any attachments to be included in the email</param>
         /// <returns></returns>
-        public virtual MailMessage CreateMailMessage(string to, string subject, string body)
+        public virtual MailMessage CreateMailMessage(string to, string subject, string body, Attachment[] attachments = null)
         {
             if (string.IsNullOrEmpty(_fromEmail))
                 throw new MissingInformationException("This RazorMailerEngine instance was constructed without a 'From Email' and thus can't send MailMessages");
@@ -164,6 +168,14 @@ namespace RazorMailer
             };
             message.To.Add(to);
             message.From = string.IsNullOrEmpty(_fromName) ? new MailAddress(_fromEmail) : new MailAddress(_fromEmail, _fromName);
+
+            if (attachments != null)
+            {
+                foreach (var attachment in attachments)
+                {
+                    message.Attachments.Add(attachment);
+                }
+            }
 
             return message;
         }
