@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("RazorMailer")]
-[assembly: AssemblyDescription("A simple RazorEngine wrapper making it easy to send emails using Razor templates")]
+[assembly: AssemblyDescription("A lightweight .NET framework, based on RazorEngine, that makes it really easy to send emails using Razor templates")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("jonleigh.me")]
 [assembly: AssemblyProduct("RazorMailer")]
