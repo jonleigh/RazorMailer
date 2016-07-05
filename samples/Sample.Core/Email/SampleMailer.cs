@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using RazorMailer;
+using RazorMailer.Core;
 using Sample.Core.Email.Models;
 
 namespace Sample.Core.Email
