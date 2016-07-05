@@ -3,6 +3,7 @@ using System.Net.Mail;
 using System.Reflection;
 using System.Threading.Tasks;
 using Moq;
+using RazorMailer.Core;
 using RazorMailer.Tests.Models;
 using Xunit;
 
