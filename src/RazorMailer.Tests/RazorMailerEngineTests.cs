@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Moq;
 using RazorMailer.Core;
+using RazorMailer.Core.Dispatchers;
 using RazorMailer.Tests.Models;
 using Xunit;
 
@@ -131,6 +132,22 @@ namespace RazorMailer.Tests
         {
             _mailerEngine = new RazorMailerEngine("templates");
             Assert.Throws<MissingInformationException>(() => _mailerEngine.Create("WelcomePartial", new WelcomeModel { Name = "Joe Blogs" }, "joe@blogs.com", "Welcome to our service"));
+        }
+
+        [Fact]
+        public void null_dispatcher()
+        {
+            _mailerEngine = new RazorMailerEngine("templates", "hello@sampleapp.com", "SampleApp", new NullDispatcher());
+            var email = _mailerEngine.Create("WelcomePartial", new WelcomeModel { Name = "Joe Blogs" }, "joe@blogs.com", "Welcome to our service");
+            _mailerEngine.Send(email);
+        }
+
+        [Fact]
+        public async Task null_dispatcher_async()
+        {
+            _mailerEngine = new RazorMailerEngine("templates", "hello@sampleapp.com", "SampleApp", new NullDispatcher());
+            var email = _mailerEngine.Create("WelcomePartial", new WelcomeModel { Name = "Joe Blogs" }, "joe@blogs.com", "Welcome to our service");
+            await _mailerEngine.SendAsync(email);
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System.Net.Mail;
 using System.Threading.Tasks;
 
-namespace RazorMailer.Core
+namespace RazorMailer.Core.Dispatchers
 {
     /// <summary>
     /// A simple dispatcher that sends emails using the built in .NET SmtpClient with default settings (i.e using configuration file settings)
