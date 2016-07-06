@@ -19,7 +19,7 @@ namespace RazorMailer.Core
 
         /// <summary>
         /// Constructs a RazorMailerEngine instance responsible for converting Razor templates into strings only and can't be used to create or send MailMessages.
-        /// <para />N.B. As this class loads up templates from the file system, it should only be created once per instance of your application.
+        /// <para /> N.B. As this class loads up templates from the file system, it should only be created once per instance of your application.
         /// </summary>
         /// <param name="templatePath">The path to load the Razor templates from.  e.g. @"email\templates".  The template's Build Action should be set to Content and the Copy to Output Directory flag set to Copy Always</param>
         public RazorMailerEngine(string templatePath) : this(templatePath, null, null, null)
@@ -28,7 +28,7 @@ namespace RazorMailer.Core
 
         /// <summary>
         /// Constructs a RazorMailerEngine instance responsible for converting Razor templates into either a MailMessage or string.  This constructor defaults to the build in SmtpDispatcher that takes its settings from the <mailSettings></mailSettings> section within your application config file.
-        /// <para />N.B. As this class loads up templates from the file system, it should only be created once per instance of your application.
+        /// <para /> N.B. As this class loads up templates from the file system, it should only be created once per instance of your application.
         /// </summary>
         /// <param name="templatePath">The path to load the Razor templates from.  e.g. @"email\templates".  The template's Build Action should be set to Content and the Copy to Output Directory flag set to Copy Always</param>
         /// <param name="fromEmail">The address the email is from. e.g. hello@yoursite.com</param>
@@ -39,7 +39,7 @@ namespace RazorMailer.Core
 
         /// <summary>
         /// Constructs a RazorMailerEngine instance responsible for converting Razor templates into either a MailMessage or string.
-        /// <para />N.B. As this class loads up templates from the file system, it should only be created once per instance of your application.
+        /// <para /> N.B. As this class loads up templates from the file system, it should only be created once per instance of your application.
         /// </summary>
         /// <param name="templatePath">The path to load the Razor templates from.  e.g. @"email\templates".  The template's Build Action should be set to Content and the Copy to Output Directory flag set to Copy Always</param>
         /// <param name="fromEmail">The address the email is from. e.g. hello@yoursite.com</param>
