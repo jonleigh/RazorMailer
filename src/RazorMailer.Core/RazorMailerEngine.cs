@@ -4,6 +4,7 @@ using System.Net.Mail;
 using System.Threading.Tasks;
 using RazorEngine.Configuration;
 using RazorEngine.Templating;
+using RazorMailer.Core.Dispatchers;
 
 namespace RazorMailer.Core
 {
