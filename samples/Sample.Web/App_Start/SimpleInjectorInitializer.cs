@@ -1,3 +1,4 @@
+using RazorMailer.Core;
 using Sample.Core.Email;
 
 namespace Sample.Web.App_Start
@@ -29,7 +30,7 @@ namespace Sample.Web.App_Start
      
         private static void InitializeContainer(Container container)
         {
-            container.Register(() => new SampleMailer(), Lifestyle.Singleton);
+            container.Register(() => new Mailer(), Lifestyle.Singleton);
         }
     }
 }

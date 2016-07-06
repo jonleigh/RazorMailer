@@ -7,11 +7,11 @@ namespace Sample.Web.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly SampleMailer _sampleMailer;
+        private readonly Mailer _mailer;
 
-        public HomeController(SampleMailer sampleMailer)
+        public HomeController(Mailer mailer)
         {
-            _sampleMailer = sampleMailer;
+            _mailer = mailer;
         }
 
         public ActionResult Index()
@@ -22,7 +22,7 @@ namespace Sample.Web.Controllers
         [HttpPost]
         public async Task<ActionResult> SendWelcomeEmail(WelcomeModel model)
         {
-            await _sampleMailer.SendWelcomeEmailAsync(model);
+            await _mailer.SendWelcomeEmailAsync(model);
 
             return View("Index", model);
         }
