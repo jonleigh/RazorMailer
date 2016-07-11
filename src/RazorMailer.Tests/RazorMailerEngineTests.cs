@@ -65,7 +65,10 @@ namespace RazorMailer.Tests
             var assembly = Assembly.GetAssembly(typeof(RazorMailerEngineTests));
             using (var stream = assembly.GetManifestResourceStream($"RazorMailer.Tests.Resources.GrumpyCat.jpg"))
             {
-                var attachment = new Attachment(stream, System.Net.Mime.MediaTypeNames.Image.Jpeg);
+                if (stream == null)
+                    throw new Exception("Grumpy cat picture not found");
+
+                var attachment = new Attachment(stream, "GrumpyCat.jpg", System.Net.Mime.MediaTypeNames.Image.Jpeg);
                 var email = _mailerEngine.Create("WelcomePartialNoModel", "joe@blogs.com", "Welcome to our service", new[] { attachment });
                 Assert.Equal(1, email.Attachments.Count);
                 Assert.Equal(attachment, email.Attachments[0]);

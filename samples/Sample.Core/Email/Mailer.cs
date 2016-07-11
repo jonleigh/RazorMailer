@@ -1,5 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Net.Mail;
+using System.Reflection;
+using System.Threading.Tasks;
 using RazorMailer.Core;
+using RazorMailer.Core.Dispatchers;
 using Sample.Core.Email.Models;
 
 namespace Sample.Core.Email
@@ -29,6 +33,26 @@ namespace Sample.Core.Email
         {
             var email = _mailerEngine.Create("WelcomePartial", model, model.Email, "Welcome to my Example Application");
             await _mailerEngine.SendAsync(email);
+        }
+
+        public async Task SendSimpleWelcomeEmailAsync(WelcomeModel model)
+        {
+            var email = _mailerEngine.Create("WelcomeSimple", model, model.Email, "Welcome to my Example Application");
+            await _mailerEngine.SendAsync(email);
+        }
+
+        public async Task SendCatEmailAsync(WelcomeModel model)
+        {
+            var assembly = Assembly.GetAssembly(typeof(Mailer));
+            using (var stream = assembly.GetManifestResourceStream($"Sample.Core.Email.Resources.GrumpyCat.jpg"))
+            {
+                if (stream == null)
+                    throw new Exception("Grumpy cat picture not found");
+
+                var attachment = new Attachment(stream, "GrumpyCat.jpg", System.Net.Mime.MediaTypeNames.Image.Jpeg);
+                var email = _mailerEngine.Create("WelcomeFeline", model, model.Email, "Welcome to my feline application", new[] { attachment });
+                await _mailerEngine.SendAsync(email);
+            }
         }
     }
 }

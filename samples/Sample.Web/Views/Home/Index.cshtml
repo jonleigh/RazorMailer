@@ -13,15 +13,15 @@
 
 <div class="row">
     <div class="col-md-6">
-        @using (Html.BeginForm("SendWelcomeEmail", "Home", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+        @using (Html.BeginForm("SendSimpleWelcomeEmail", "Home", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
         {
-            <h4>Who would you like to send a welcome email to?</h4>
-                <hr />
+            <h4>Send a welcome email <strong>without</strong> a template</h4>
+            <hr />
             <div class="form-group">
-                @Html.LabelFor(m => m.Name, new {@class = "col-md-2 control-label"})
+                @Html.LabelFor(m => m.Name, new { @class = "col-md-2 control-label" })
                 <div class="col-md-10">
-                    @Html.TextBoxFor(m => m.Name, new {@class = "form-control"})
-                    @Html.ValidationMessageFor(m => m.Name, "", new {@class = "text-danger"})
+                    @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
                 </div>
             </div>
             <div class="form-group">
@@ -34,9 +34,75 @@
 
             <div class="form-group">
                 <div class="col-md-offset-2 col-md-10">
-                    <input type="submit" value="Send Email" class="btn btn-default"/>
+                    <input type="submit" value="Send Email" class="btn btn-default" />
                 </div>
             </div>
+        }
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <p></p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        @using (Html.BeginForm("SendWelcomeEmail", "Home", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+        {
+            <h4>Send a welcome email <strong>with</strong> a template</h4>
+                    <hr />
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Name, new { @class = "col-md-2 control-label" })
+                        <div class="col-md-10">
+                            @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Email, new { @class = "col-md-2 control-label" })
+                        <div class="col-md-10">
+                            @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-offset-2 col-md-10">
+                            <input type="submit" value="Send Email" class="btn btn-default" />
+                        </div>
+                    </div>
+        }
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        @using (Html.BeginForm("SendCatEmail", "Home", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+        {
+            <h4>Send a welcome email with a picture of a cat as an attachment</h4>
+                    <hr />
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Name, new { @class = "col-md-2 control-label" })
+                        <div class="col-md-10">
+                            @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Email, new { @class = "col-md-2 control-label" })
+                        <div class="col-md-10">
+                            @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-offset-2 col-md-10">
+                            <input type="submit" value="Send Email" class="btn btn-default" />
+                        </div>
+                    </div>
         }
     </div>
 </div>
