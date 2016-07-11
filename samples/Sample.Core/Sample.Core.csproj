@@ -34,8 +34,8 @@
       <HintPath>..\packages\RazorEngine.3.8.2\lib\net45\RazorEngine.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="RazorMailer.Core, Version=0.9.15.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RazorMailer.0.9.15\lib\net452\RazorMailer.Core.dll</HintPath>
+    <Reference Include="RazorMailer.Core, Version=0.9.16.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RazorMailer.0.9.16\lib\net452\RazorMailer.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -58,15 +58,19 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Email\Templates\WelcomeFeline.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="packages.config" />
+    <EmbeddedResource Include="Email\Resources\GrumpyCat.jpg" />
     <Content Include="Email\Templates\WelcomePartial.cshtml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Email\Templates\WelcomeSimple.cshtml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Email\Templates\_WelcomeLayout.cshtml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <Content Include="Email\Templates\_DefaultLayout.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
