@@ -8,12 +8,12 @@ using Xunit;
 
 namespace Sample.Core.Tests.Email
 {
-    public class SampleMailerTests
+    public class MailerTests
     {
         private readonly Mock<IEmailDispatcher> _dispatcher;
         private readonly Mailer _mailer;
 
-        public SampleMailerTests()
+        public MailerTests()
         {
             // Initialised per test by xunit            
             _dispatcher = new Mock<IEmailDispatcher>();

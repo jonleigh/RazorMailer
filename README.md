@@ -1,7 +1,7 @@
 ##RazorMailer##
 ![Build Status](https://westridgedesign.visualstudio.com/_apis/public/build/definitions/821eded2-7e35-482d-9589-e62425bf523a/2/badge "Build Status")
 
-**RazorMailer** is a lightweight framework, based on RazorEngine, that makes it really easy to send emails using Razor templates.  The reason for its existence and information on how it was built can be found on [my blog](http://jonleigh.me/creating-a-new-email-framework-for-dot-net/).  
+**RazorMailer** is a lightweight framework, based on RazorEngine, that makes it really easy to send emails using Razor templates.  The reason for its existence and information on how it was built can be found in this [blog post](http://jonleigh.me/creating-a-new-email-framework-for-dot-net/).  
 
 It has been designed so that it doesn't rely on any one framework, allowing you to send emails from your preferred host, be it ASP.NET MVC, NancyFX, a console or service application or a batch processing framework such as Azure WebJobs or Hangfire.
 
@@ -10,14 +10,17 @@ It supports the following:
 * Model based Razor templates using POCOs
 * Template caching
 * Layouts
+* Attachments
 * Unit testing & mocking
 * Sending of emails via 3rd party mechanisms by extending ``IEmailDispatcher``
 
-The extracts below have been taken from a [sample application](https://github.com/jonleigh/RazorMailer/tree/master/samples) which demonstrates a working implementation of RazorMailer.  
+The extracts below have been taken from a [sample application](https://github.com/jonleigh/RazorMailer/tree/master/samples) which demonstrates a working implementation of RazorMailer using ASP.NET MVC.
 
-I've also included information on two tools ([smtp4dev](http://smtp4dev.codeplex.com/) & [Mailtrap](https://mailtrap.io/)) that come in handy when developing and testing emails in a development or test environment.  More on these can be found near the [bottom of the page](#development-and-testing).
+Information on two tools, [smtp4dev](http://smtp4dev.codeplex.com/) & [Mailtrap](https://mailtrap.io/)), that come in handy when developing and testing emails in different environments, has been included near the [bottom of the page](#development-and-testing).
 
 ###Installation###
+
+**RazorMailer** can be installed from the NuGet Package Manager or via the NuGet Console by typing ``Install-Package RazorMailer``
 
 ###Models###
 At present, RazorMailer only supports typed POCO models to populate templates.  This means you will need to create a model per email or share the same model across emails of a similar nature (e.g both only need a link to your website).  While it's easy to get up and running with ``dynamic`` models, their use in this regard is a code smell and the lack of type checking can soon become a maintenance headache.
@@ -25,37 +28,53 @@ At present, RazorMailer only supports typed POCO models to populate templates.  
 ###Core Logic###
 RazorMailer can be best used in one of two ways:
 
-1. Centralising your email logic into a single email class, responsible for sending every email within your solution.
+1. Centralising your email logic into a single email class, responsible for sending every email within your solution
 2. Writing a separate class per email
 
-Option 1 is normally adequate but if you're paying strict attention to the single responsibility principle, you may want to choose option 2.  Whatever you choose, just ensure you have adequate unit test coverage of your email logic.  A sample centralised email class can be found below:
+Option 1 is normally adequate but if you're paying strict attention to the single responsibility principle, you may want to choose option 2.  Whatever you choose, just ensure you have adequate unit test coverage of your email logic.
+
+RazorMailer operates in a two step process.  First, the template is compiled (optionally with a model) into a .NET MailMessage object using the ``Create`` method on ``RazorMailerEngine`` with the default from name and from email specified in the ``RazorMailerEngine`` constructor.  Once the MailMessage has been generated, the ``Send`` or ``SendAsync`` method needs to be called to dispatch the email.  Since RazorMailer generates and works with the built in .NET MailMessage class, you're able to customise the MailMessage to your hearts content before calling the ``Send`` or ``SendAsync`` method.
+
+A ``Mailer`` class from the [sample application](https://github.com/jonleigh/RazorMailer/tree/master/samples), based on option 1, can be found below:
 
 ```csharp
-public class SampleMailer
+public class Mailer
 {
 	private readonly RazorMailerEngine _mailerEngine;
 
-	public SampleMailer() : this(new SmtpDispatcher())
+	/// <summary>
+	/// The default constructor that initialises RazorMailer with it's built in SmtpDispatcher
+	/// </summary>
+	public Mailer() : this(new SmtpDispatcher())
+	{
+	}
+
+	/// <summary>
+	/// This overload allows us to pass in a mock dispatcher for testing purposes
+	/// </summary>
+	/// <param name="dispatcher"></param>
+	public Mailer(IEmailDispatcher dispatcher)
 	{
 		// Default to the built in Smtp engine
+		_mailerEngine = new RazorMailerEngine(@"email\templates", "hello@example.com", "Sample Website", dispatcher);
 	}
 
-	public SampleMailer(IEmailDispatcher dispatcher)
-	{
-		_mailerEngine = new RazorMailerEngine(@"email\templates", dispatcher, "hello@example.com", "Sample Website");
-	}
-
+	/// <summary>
+	/// A simple method that asynchronously send a email based on a Razor layout and partial 
+	/// </summary>
 	public async Task SendWelcomeEmailAsync(WelcomeModel model)
 	{
-		var email = _mailerEngine.Create(model.Email, "WelcomePartial", "Welcome to my Example Application", model);
+		MailMessage email = _mailerEngine.Create("WelcomePartial", model, model.Email, "Welcome to my Example Application");
 		await _mailerEngine.SendAsync(email);
 	}
+	
+	...
 }
 ```	
 
 ###Templates###
 
-Templates can be included within your host project (e.g a console or ASP.NET MVC application) or within a seperate class library within your solution, such as a "Core" library.  The benefits of hosting within said library are twofold a) being we can share the templates across different application types and b) that we can cover the templates with unit tests.
+Templates can be included within your host project (e.g a console or ASP.NET MVC application) or within a seperate class library within your solution, such as a "Core" library.  The benefits of hosting within said library are twofold a) being we can share the templates across different application types and b) that we can cover the templates with [unit tests](#unit-testing).
 
 N.B The templates can be included in an project within your solution but must have their ``Build Action`` set to ``Content`` and ``Copy to Output Directory`` flag set to ``Copy always``.  This ensures that the templates end up the in the same folder as the executing assembly and are included when you package your application.
 
@@ -85,10 +104,10 @@ A simple template (without a layout) is included below:
 
 ###Template Caching###
 
-When a template is first called, the template is loaded up from disk, compiled and cached into memory for future calls.  It is therefore essential that you only construct the ``RazorMailer`` class once in your application (e.g through the use of a container such as SimpleInjector) or you run the risk of running into a severe performance issue.
+When a template is first called, the template is loaded up from disk, compiled and cached into memory for future calls.  It is therefore essential that you only construct the ``Mailer`` class once in your application (ideally through the use of a container such as SimpleInjector) or you run the risk of running into a severe performance issue.
 
 ###Layouts###
-Layouts can be added by including them in the same folder as your template and referencing them at the top though a directive at the top of the template.  The layout will automatically be picked up, compiled and cached for quick reuse on the next call.
+Layouts can be added by including them in the same folder as your partial template (the segment to be contained within the layout) and referencing it though a directive at the top of the partial.  The layout will automatically be picked up, compiled and cached for quick reuse on the next call.
 
 A layout and partial template are included below:
 
@@ -121,21 +140,59 @@ A layout and partial template are included below:
 <p>Toodles</p>
 ```
 
-###Sending Emails###
-The actual sending of an email is done through the ``IEmailDispatcher`` interface allowing you to either use the built in ``SmtpDispatcher`` (which utilises the built in .NET classes) or write your own, most probably because you would like to use the API of your favourite transactional email gateway such as MailJet, Mandrill etc.  It also handily leads into our next point:
+###Attachments###
 
-###Unit Testing###
-It's fairly trivial to write unit tests for specific emails by mocking out the ``IEmailDispatcher`` interface (here using Moq), creating a model and calling the Create method on our RazorMailer class.  A simple test is outlined below:
+RazorMailer uses the build in .NET Attachment class in the Mail namespace.  Simply create attachments as you would if you were using native .NET and pass them into the ``Create`` method on the ``RazorMailerEngine``.  A sample has been provided below:
+
 
 ```csharp
-var dispatcher = new Mock<IEmailDispatcher>();
-var mailer = new RazorMailer("templates", dispatcher.Object, "hello@sampleapp.com", "SampleApp");
+public async Task SendCatEmailAsync(WelcomeModel model)
+{
+	var assembly = Assembly.GetAssembly(typeof(Mailer));
+	using (var stream = assembly.GetManifestResourceStream($"Sample.Core.Email.Resources.GrumpyCat.jpg"))
+	{
+		if (stream == null)
+			throw new Exception("Grumpy cat picture not found");
 
-var email = mailer.Create("joe@blogs.com", "WelcomePartial", "Welcome to our service", new WelcomeModel { Name = "Joe Blogs" });
-mailer.Send(email);
+		var attachment = new Attachment(stream, "GrumpyCat.jpg", System.Net.Mime.MediaTypeNames.Image.Jpeg);
+		MailMessage email = _mailerEngine.Create("WelcomeFeline", model, model.Email, "Welcome to my feline application", new[] { attachment });
+		await _mailerEngine.SendAsync(email);
+	}
+}
+```
 
-dispatcher.Verify(x => x.Send(It.IsAny<MailMessage>()), Times.Once);
-Assert.Contains("Joe Blogs", email.Body);
+###Sending Emails###
+The actual sending of an email is done through the ``IEmailDispatcher`` interface allowing you to either use the built in ``SmtpDispatcher`` (which utilises the built in .NET SmtpClient class) or by writing your own, most probably because you would like to use the API of your favourite transactional email gateway such as MailJet, Mandrill etc.  It also handily leads into our next point:
+
+###Unit Testing###
+It's fairly trivial to write unit tests for specific emails by mocking out the ``IEmailDispatcher`` interface (here using Moq), creating a model and calling the method to generate and *send* and email.  
+
+Writing tests in this manner ensures that the template and model can sucessfully be compiled without actually sending the email.
+
+A simple test class is outlined below (more can be found in the [sample application](https://github.com/jonleigh/RazorMailer/tree/master/samples):
+
+```csharp
+public class MailerTests
+{
+	private readonly Mock<IEmailDispatcher> _dispatcher;
+	private readonly Mailer _mailer;
+
+	public MailerTests()
+	{
+		// Initialised per test by xunit            
+		_dispatcher = new Mock<IEmailDispatcher>();
+		_mailer = new Mailer(_dispatcher.Object);
+	}
+
+	[Fact]
+	public async Task send_welcome_email_async()
+	{
+		await _mailer.SendWelcomeEmailAsync(new WelcomeModel { Name = "Joe Blogs", Email = "joe@blogs.com" });
+		_dispatcher.Verify(x => x.SendAsync(It.Is<MailMessage>(m => m.Subject == "Welcome to my Example Application")), Times.Once);
+	}
+	
+	...
+}
 ```
 
 ###Development and Testing###
