@@ -1,18 +1,23 @@
 ##RazorMailer##
 ![Build Status](https://westridgedesign.visualstudio.com/_apis/public/build/definitions/821eded2-7e35-482d-9589-e62425bf523a/2/badge "Build Status")
 
-RazorMailer is a lightweight framework, based on RazorEngine, that makes it really easy to send emails using Razor templates.  The reason for its existence and information on how it was built can be found on [my blog](http://jonleigh.me/creating-a-new-email-framework-for-dot-net/).  It has been designed so that it doesn't rely on any one framework, allowing you to send emails from your preferred host, be it a console or service application, ASP.NET MVC, NancyFX or batch processing frameworks such as Azure WebJobs or Hangfire.
+**RazorMailer** is a lightweight framework, based on RazorEngine, that makes it really easy to send emails using Razor templates.  The reason for its existence and information on how it was built can be found on [my blog](http://jonleigh.me/creating-a-new-email-framework-for-dot-net/).  
+
+It has been designed so that it doesn't rely on any one framework, allowing you to send emails from your preferred host, be it ASP.NET MVC, NancyFX, a console application, a service application or a batch processing framework such as Azure WebJobs or Hangfire.
 
 It supports the following:
 
 * Model based Razor templates using POCOs
 * Template caching
 * Layouts
-* Unit testing
+* Unit testing & mocking
 * Sending of emails via 3rd party mechanisms by extending ``IEmailDispatcher``
 
+The extracts below have been taken from a [sample application](https://github.com/jonleigh/RazorMailer/tree/master/samples) which demonstrates a working implementation of RazorMailer.  
 
-A [sample application](https://github.com/jonleigh/RazorMailer/tree/master/samples) has been provided demonstrating a working implementation of RazorMailer.  I've also included some information on two tools that come in handy when developing and testing emails within a project.  This can be found near the [bottom of the page](#development-and-testing).
+I've also included information on two tools ([smtp4dev](http://smtp4dev.codeplex.com/) & [Mailtrap](https://mailtrap.io/)) that come in handy when developing and testing emails in a development or test environment.  More on these can be found near the [bottom of the page](#development-and-testing).
+
+###Installation###
 
 ###Models###
 At present, RazorMailer only supports typed POCO models to populate templates.  This means you will need to create a model per email or share the same model across emails of a similar nature (e.g both only need a link to your website).  While it's easy to get up and running with ``dynamic`` models, their use in this regard is a code smell and the lack of type checking can soon become a maintenance headache.
