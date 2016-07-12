@@ -26,5 +26,21 @@ namespace Sample.Web.Controllers
 
             return View("Index", model);
         }
+
+        [HttpPost]
+        public async Task<ActionResult> SendSimpleWelcomeEmail(WelcomeModel model)
+        {
+            await _mailer.SendSimpleWelcomeEmailAsync(model);
+
+            return View("Index", model);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> SendCatEmail(WelcomeModel model)
+        {
+            await _mailer.SendCatEmailAsync(model);
+
+            return View("Index", model);
+        }
     }
 }
