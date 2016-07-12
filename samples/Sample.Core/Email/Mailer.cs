@@ -22,22 +22,24 @@ namespace Sample.Core.Email
         /// <summary>
         /// This overload allows us to pass in a mock dispatcher for testing purposes
         /// </summary>
-        /// <param name="dispatcher"></param>
         public Mailer(IEmailDispatcher dispatcher)
         {
             // Default to the built in Smtp engine
             _mailerEngine = new RazorMailerEngine(@"email\templates", "hello@example.com", "Sample Website", dispatcher);
         }
 
+        /// <summary>
+        /// A simple method that asynchronously send a email based on a Razor layout and partial 
+        /// </summary>
         public async Task SendWelcomeEmailAsync(WelcomeModel model)
         {
-            var email = _mailerEngine.Create("WelcomePartial", model, model.Email, "Welcome to my Example Application");
+            MailMessage email = _mailerEngine.Create("WelcomePartial", model, model.Email, "Welcome to my Example Application");
             await _mailerEngine.SendAsync(email);
         }
 
         public async Task SendSimpleWelcomeEmailAsync(WelcomeModel model)
         {
-            var email = _mailerEngine.Create("WelcomeSimple", model, model.Email, "Welcome to my Example Application");
+            MailMessage email = _mailerEngine.Create("WelcomeSimple", model, model.Email, "Welcome to my Example Application");
             await _mailerEngine.SendAsync(email);
         }
 
@@ -50,7 +52,7 @@ namespace Sample.Core.Email
                     throw new Exception("Grumpy cat picture not found");
 
                 var attachment = new Attachment(stream, "GrumpyCat.jpg", System.Net.Mime.MediaTypeNames.Image.Jpeg);
-                var email = _mailerEngine.Create("WelcomeFeline", model, model.Email, "Welcome to my feline application", new[] { attachment });
+                MailMessage email = _mailerEngine.Create("WelcomeFeline", model, model.Email, "Welcome to my feline application", new[] { attachment });
                 await _mailerEngine.SendAsync(email);
             }
         }
