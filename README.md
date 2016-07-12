@@ -3,7 +3,7 @@
 
 **RazorMailer** is a lightweight framework, based on RazorEngine, that makes it really easy to send emails using Razor templates.  The reason for its existence and information on how it was built can be found on [my blog](http://jonleigh.me/creating-a-new-email-framework-for-dot-net/).  
 
-It has been designed so that it doesn't rely on any one framework, allowing you to send emails from your preferred host, be it ASP.NET MVC, NancyFX, a console application, a service application or a batch processing framework such as Azure WebJobs or Hangfire.
+It has been designed so that it doesn't rely on any one framework, allowing you to send emails from your preferred host, be it ASP.NET MVC, NancyFX, a console or service application or a batch processing framework such as Azure WebJobs or Hangfire.
 
 It supports the following:
 
