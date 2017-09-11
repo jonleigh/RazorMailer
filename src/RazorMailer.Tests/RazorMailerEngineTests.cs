@@ -25,7 +25,7 @@ namespace RazorMailer.Tests
         [Fact]
         public void mailmessage_simple_template_with_typed_model_test()
         {
-            var email = _mailerEngine.Create("WelcomeSimple", new WelcomeModel { Name = "Joe Blogs" }, "joe@blogs.com", "Welcome to our service");
+            var email = _mailerEngine.Create("WelcomeSimple.cshtml", new WelcomeModel { Name = "Joe Blogs" }, "joe@blogs.com", "Welcome to our service");
             _mailerEngine.Send(email);
 
             _dispatcher.Verify(x => x.Send(It.IsAny<MailMessage>()), Times.Once);
@@ -35,14 +35,14 @@ namespace RazorMailer.Tests
         [Fact]
         public void mailmessage_simple_template_without_model()
         {
-            var email = _mailerEngine.Create("WelcomeSimpleNoModel", "joe@blogs.com", "Welcome to our service");
+            var email = _mailerEngine.Create("WelcomeSimpleNoModel.cshtml", "joe@blogs.com", "Welcome to our service");
             Assert.Contains("Welcome to my website", email.Body);
         }
 
         [Fact]
         public void mailmessage_layout_template_with_typed_model()
         {
-            var email = _mailerEngine.Create("WelcomePartial", new WelcomeModel { Name = "Joe Blogs" }, "joe@blogs.com", "Welcome to our service");
+            var email = _mailerEngine.Create("WelcomePartial.cshtml", new WelcomeModel { Name = "Joe Blogs" }, "joe@blogs.com", "Welcome to our service");
             Assert.Contains("Joe Blogs", email.Body);
         }
         
@@ -53,7 +53,7 @@ namespace RazorMailer.Tests
             using (var stream = assembly.GetManifestResourceStream($"RazorMailer.Tests.Resources.GrumpyCat.jpg"))
             {
                 var attachment = new Attachment(stream, System.Net.Mime.MediaTypeNames.Image.Jpeg);
-                var email = _mailerEngine.Create("WelcomePartial", new WelcomeModel {Name = "Joe Blogs"}, "joe@blogs.com", "Welcome to our service", new[] {attachment});
+                var email = _mailerEngine.Create("WelcomePartial.cshtml", new WelcomeModel {Name = "Joe Blogs"}, "joe@blogs.com", "Welcome to our service", new[] {attachment});
                 Assert.Equal(1, email.Attachments.Count);
                 Assert.Equal(attachment, email.Attachments[0]);
             }
@@ -69,7 +69,7 @@ namespace RazorMailer.Tests
                     throw new Exception("Grumpy cat picture not found");
 
                 var attachment = new Attachment(stream, "GrumpyCat.jpg", System.Net.Mime.MediaTypeNames.Image.Jpeg);
-                var email = _mailerEngine.Create("WelcomePartialNoModel", "joe@blogs.com", "Welcome to our service", new[] { attachment });
+                var email = _mailerEngine.Create("WelcomePartialNoModel.cshtml", "joe@blogs.com", "Welcome to our service", new[] { attachment });
                 Assert.Equal(1, email.Attachments.Count);
                 Assert.Equal(attachment, email.Attachments[0]);
             }
@@ -78,28 +78,28 @@ namespace RazorMailer.Tests
         [Fact]
         public void string_simple_template_without_model()
         {
-            var text = _mailerEngine.Create("WelcomeSimpleNoModel");
+            var text = _mailerEngine.Create("WelcomeSimpleNoModel.cshtml");
             Assert.Contains("Toodles", text);
         }
 
         [Fact]
         public void string_simple_template_with_typed_model()
         {
-            var text = _mailerEngine.Create("WelcomeSimple", new WelcomeModel { Name = "Joe Blogs" });
+            var text = _mailerEngine.Create("WelcomeSimple.cshtml", new WelcomeModel { Name = "Joe Blogs" });
             Assert.Contains("Joe Blogs", text);
         }
 
         [Fact]
         public void string_layout_template_with_typed_model_test()
         {
-            var text = _mailerEngine.Create("WelcomePartial", new WelcomeModel { Name = "Joe Blogs" });
+            var text = _mailerEngine.Create("WelcomePartial.cshtml", new WelcomeModel { Name = "Joe Blogs" });
             Assert.Contains("Joe Blogs", text);
         }
 
         [Fact]
         public void mailmessage_send()
         {
-            var email = _mailerEngine.Create("WelcomePartial", new WelcomeModel { Name = "Joe Blogs" }, "joe@blogs.com", "Welcome to our service");
+            var email = _mailerEngine.Create("WelcomePartial.cshtml", new WelcomeModel { Name = "Joe Blogs" }, "joe@blogs.com", "Welcome to our service");
             _mailerEngine.Send(email);
 
             _dispatcher.Verify(x => x.Send(It.IsAny<MailMessage>()), Times.Once);
@@ -108,7 +108,7 @@ namespace RazorMailer.Tests
         [Fact]
         public async Task async_mailmessage_send()
         {
-            var email = _mailerEngine.Create("WelcomePartial", new WelcomeModel { Name = "Joe Blogs" }, "joe@blogs.com", "Welcome to our service");
+            var email = _mailerEngine.Create("WelcomePartial.cshtml", new WelcomeModel { Name = "Joe Blogs" }, "joe@blogs.com", "Welcome to our service");
             await _mailerEngine.SendAsync(email);
 
             _dispatcher.Verify(x => x.SendAsync(It.IsAny<MailMessage>()), Times.Once);
@@ -118,7 +118,7 @@ namespace RazorMailer.Tests
         public async Task implicit_ctor_smtp_host_not_provided()
         {
             _mailerEngine = new RazorMailerEngine("templates", "hello@sampleapp.com", "SampleApp");
-            var email = _mailerEngine.Create("WelcomePartial", new WelcomeModel { Name = "Joe Blogs" }, "joe@blogs.com", "Welcome to our service");
+            var email = _mailerEngine.Create("WelcomePartial.cshtml", new WelcomeModel { Name = "Joe Blogs" }, "joe@blogs.com", "Welcome to our service");
             await Assert.ThrowsAsync<InvalidOperationException>(() => _mailerEngine.SendAsync(email));
         }
 
@@ -126,7 +126,7 @@ namespace RazorMailer.Tests
         public void reduced_ctor_able_to_create_string()
         {
             _mailerEngine = new RazorMailerEngine("templates");
-            var text = _mailerEngine.Create("WelcomePartial", new WelcomeModel { Name = "Joe Blogs" });
+            var text = _mailerEngine.Create("WelcomePartial.cshtml", new WelcomeModel { Name = "Joe Blogs" });
             Assert.Contains("Joe Blogs", text);
         }
 
@@ -134,14 +134,14 @@ namespace RazorMailer.Tests
         public void reduced_ctor_not_able_to_create_mailmessage()
         {
             _mailerEngine = new RazorMailerEngine("templates");
-            Assert.Throws<MissingInformationException>(() => _mailerEngine.Create("WelcomePartial", new WelcomeModel { Name = "Joe Blogs" }, "joe@blogs.com", "Welcome to our service"));
+            Assert.Throws<MissingInformationException>(() => _mailerEngine.Create("WelcomePartial.cshtml", new WelcomeModel { Name = "Joe Blogs" }, "joe@blogs.com", "Welcome to our service"));
         }
 
         [Fact]
         public void null_dispatcher()
         {
             _mailerEngine = new RazorMailerEngine("templates", "hello@sampleapp.com", "SampleApp", new NullDispatcher());
-            var email = _mailerEngine.Create("WelcomePartial", new WelcomeModel { Name = "Joe Blogs" }, "joe@blogs.com", "Welcome to our service");
+            var email = _mailerEngine.Create("WelcomePartial.cshtml", new WelcomeModel { Name = "Joe Blogs" }, "joe@blogs.com", "Welcome to our service");
             _mailerEngine.Send(email);
         }
 
@@ -149,7 +149,7 @@ namespace RazorMailer.Tests
         public async Task null_dispatcher_async()
         {
             _mailerEngine = new RazorMailerEngine("templates", "hello@sampleapp.com", "SampleApp", new NullDispatcher());
-            var email = _mailerEngine.Create("WelcomePartial", new WelcomeModel { Name = "Joe Blogs" }, "joe@blogs.com", "Welcome to our service");
+            var email = _mailerEngine.Create("WelcomePartial.cshtml", new WelcomeModel { Name = "Joe Blogs" }, "joe@blogs.com", "Welcome to our service");
             await _mailerEngine.SendAsync(email);
         }
     }

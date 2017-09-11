@@ -2,8 +2,7 @@
 using System.IO;
 using System.Net.Mail;
 using System.Threading.Tasks;
-using RazorEngine.Configuration;
-using RazorEngine.Templating;
+using RazorLight;
 using RazorMailer.Core.Dispatchers;
 
 namespace RazorMailer.Core
@@ -11,13 +10,14 @@ namespace RazorMailer.Core
     /// <summary>
     /// The core RazorMailer engine responsible for converting Razor templates into MailMessages
     /// </summary>
-    public class RazorMailerEngine : IDisposable
+    public class RazorMailerEngine
     {
         private readonly string _fromName;
         private readonly string _fromEmail;
         private readonly IEmailDispatcher _dispatcher;
-        private readonly IRazorEngineService _service;
+        private readonly IRazorLightEngine _engine;
 
+        /// <inheritdoc />
         /// <summary>
         /// Constructs a RazorMailerEngine instance responsible for converting Razor templates into strings only and can't be used to create or send MailMessages.
         /// <para /> N.B. As this class loads up templates from the file system, it should only be created once per instance of your application.
@@ -27,6 +27,7 @@ namespace RazorMailer.Core
         {
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Constructs a RazorMailerEngine instance responsible for converting Razor templates into either a MailMessage or string.  This constructor defaults to the build in SmtpDispatcher that takes its settings from the <mailSettings></mailSettings> section within your application config file.
         /// <para /> N.B. As this class loads up templates from the file system, it should only be created once per instance of your application.
@@ -52,17 +53,15 @@ namespace RazorMailer.Core
             _fromEmail = fromEmail;
             _dispatcher = dispatcher;
 
-            // Find templates in a web application
-            var webPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "bin", templatePath);
-            // Find templates from a unit test or console application
-            var libraryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, templatePath);
-
-            var config = new TemplateServiceConfiguration
+            // Find templates in a web application by default
+            var libraryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "bin", templatePath);
+            if (File.Exists(libraryPath))
             {
-                TemplateManager = new ResolvePathTemplateManager(new[] { webPath, libraryPath })
-            };
+                // Find templates from a unit test or console application
+                libraryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, templatePath);
+            }
 
-            _service = RazorEngineService.Create(config);
+            _engine = EngineFactory.CreatePhysical(libraryPath);
         }
 
         /// <summary>
@@ -72,8 +71,8 @@ namespace RazorMailer.Core
         /// <returns>A string containing the result of the template</returns>
         public virtual string Create(string template)
         {
-            var key = _service.GetKey(template);
-            return _service.RunCompile(key);
+            var body = _engine.Parse(template, new EmptyModel());
+            return body;
         }
 
         /// <summary>
@@ -84,8 +83,8 @@ namespace RazorMailer.Core
         /// <returns>A string containing the result of the template and model</returns>
         public virtual string Create<T>(string template, T model)
         {
-            var key = _service.GetKey(template);
-            return _service.RunCompile(key, typeof(T), model);
+            var body = _engine.Parse(template, model);
+            return body;
         }
 
         /// <summary>
@@ -98,9 +97,7 @@ namespace RazorMailer.Core
         /// <returns>A MailMessage</returns>
         public virtual MailMessage Create(string template, string to, string subject, Attachment[] attachments = null)
         {
-            var key = _service.GetKey(template);
-            var body = _service.RunCompile(key);
-
+            var body = _engine.Parse(template, new EmptyModel());
             return CreateMailMessage(to, subject, body, attachments);
         }
 
@@ -115,9 +112,7 @@ namespace RazorMailer.Core
         /// <returns>A MailMessage</returns>
         public virtual MailMessage Create<T>(string template, T model, string to, string subject, Attachment[] attachments = null)
         {
-            var key = _service.GetKey(template);
-            var body = _service.RunCompile(key, typeof(T), model);
-
+            var body = _engine.Parse(template, model);
             return CreateMailMessage(to, subject, body, attachments);
         }
 
@@ -182,14 +177,6 @@ namespace RazorMailer.Core
             }
 
             return message;
-        }
-
-        /// <summary>
-        /// Disposes of the underlying RazorEngine service
-        /// </summary>
-        public void Dispose()
-        {
-            _service.Dispose();
         }
     }
 }
