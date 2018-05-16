@@ -25,7 +25,7 @@ Information on two tools, [smtp4dev](http://smtp4dev.codeplex.com/) & [Mailtrap]
 ### Models
 At present, RazorMailer only supports typed POCO models to populate templates.  This means you will need to create a model per email or share the same model across emails of a similar nature (e.g both only need a link to your website).  While it's easy to get up and running with ``dynamic`` models, their use in this regard is a code smell and the lack of type checking can soon become a maintenance headache.
 
-###Core Logic###
+### Core Logic
 RazorMailer can be best used in one of two ways:
 
 1. Centralising your email logic into a single email class, responsible for sending every email within your solution
